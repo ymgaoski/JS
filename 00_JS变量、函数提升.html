@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS变量、函数提升</title>
+
+  <script>
+    var a = 1;
+
+    // 立即执行函数，会产生闭包
+    (function(){
+     // 弹出 undefined，因为下面定义的 a 会提升到前面 var a;但是没赋值，然后执行到下面的时候才进行 a = 2; 
+     // 如果下面没有定义var a 的话那这里就能弹出 1 
+      console.log(a,'a1'); 
+      var a = 2; 
+    })();
+
+    // 弹出 1，不会受闭包函数里面的定义而影响
+    console.log(a,'a2');
+    
+  </script>
+
+  <!-- 函数提升 -->
+  <script>
+
+    (function(){
+      var a = 20;
+      function a(){
+
+      }
+      // 打印 20，因为函数比变量优先级更高，会最先提升，然后才提升变量，因为JS是从上往下执行的，所以后面提升的变量会把前面提升的函数给覆盖掉
+      console.log(a,'a3');
+
+      var b = c = a;
+      // 转换后如下：
+      // var b = 20;
+      // // 因为c 前面没有使用 var 所以会定义到window上去
+      // c = 20;
+    })();
+
+    // 打印 20，上面有解释
+    console.log(c,'c');
+  
+  </script>
+
+</head>
+<body>
+  
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>浅拷贝与深拷贝</title>
+
+  <script>
+	
+	(function (){
+		// 原对象
+		var p1 = {
+			name : 'xgao',
+			age : 18,
+			like : ['读书','玩','音乐']
+		};
+		
+		// 深拷贝
+		var p3 = {};
+		this.deepCopy(p1,p3);
+		p3.name = 'wang';
+		p3.age = 38;
+		p3.like.push('吃');
+		console.log(p3,'深拷贝 p3');
+		
+		// 浅拷贝
+		var p2 = {};
+		// ES6方法，将p1拷贝到p2
+		Object.assign(p2,p1);
+		// 自定义方法
+		// this.lightCopy(p1,p2);
+		
+		p2.name = 'qiang';
+		p2.age = 29;
+		p2.like.push('游戏');
+		console.log(p2,'浅拷贝 p2');
+		
+		
+		console.log(p1,'原始 p1');
+	})();
+	
+	
+	/**
+	* 浅拷贝
+	* @param {原始对象} sourceObj
+	* @param {新对象} disObj
+	*/
+	function lightCopy(sourceObj,disObj){
+	  for(let i in sourceObj){
+		disObj[i] = sourceObj[i];
+	  }
+	}
+	
+	/**
+	* 深拷贝
+	* @param {原始对象} sourceObj
+	* @param {新对象} disObj
+	*/
+	function deepCopy(sourceObj,disObj){
+	  
+	    for(let i in sourceObj){
+			
+			if (!this.isObj(sourceObj[i])){
+				// 基础类型，值类型，直接赋值
+				disObj[i] = sourceObj[i];
+			}else{
+				// 复杂类型，引用类型，需要创建新对象再赋值, 下面这个 new constructor 才是关键
+				let newObj = new sourceObj[i].constructor;
+				this.deepCopy(sourceObj[i],newObj);
+				
+				// 设置新对象
+				disObj[i] = newObj;
+			}
+	    }
+	}
+	// 是否是对象
+	function isObj(obj){
+		return obj instanceof Object;
+	}
+	
+  </script>
+  
+</head>
+<body>
+  <h1>浅拷贝与深拷贝</h1>
+</body>
+</html>

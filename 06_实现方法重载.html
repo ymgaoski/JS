@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>实现方法重载</title>
+</head>
+<body>
+ 
+</body>
+
+<script>
+  // 网页输出日志
+  console.slog = console.log;
+  console.log = function(text,...args){
+
+    let others = [];
+    args.forEach(function(item){
+      if (typeof item == 'string'){
+        others.push(`"${item}"`);
+      }else{
+        others.push(item);
+      }
+    })
+    
+    let body = document.getElementsByTagName('body')[0];
+    let node = document.createElement('pre');
+    node.textContent = `${text} ${others.join(" ")}`;
+    body.appendChild(node);
+
+    console.slog(text,...args);
+  }
+</script>
+
+<script>
+
+// JS本身是没有方法重载的概念，如果当一个方法有很多种重载的时候，再手动去判断 arguments.length 去 switch 的话，那就是很痛苦的
+
+// 添加方法实现重载
+// 第一次调用时， old = undefined
+// 第二次调用时， old = find
+// 第三次调用时， old = find1
+// 每次调用都是缓存上一次的 find 方法，所以当find1 找不到时，会去调用 find方法
+function addMethod(obj,name,fn){
+  
+  // 精髓之处
+  var old = obj[name];
+
+  obj[name] = function(){
+    // 判断调用的方法参数长度是否和 addMethod调用时传进来的fn的参数一至
+    if (fn.length == arguments.length){
+      // 调用该方法，apply 和 call功能一样，一个是数组传参，一个是单独参数一个一个传
+      return fn.apply(this,arguments);
+    }else{
+      // 调用上一个方法，一条链式调用，一直往上
+      return old.apply(this,arguments);
+    }
+  } 
+
+}
+
+// 要添加方法的对象
+var person = {
+  like: ['学习','听书','打球']
+}
+
+// 方法一
+var find0 = function(){
+  console.log(this.like,'find0');
+}
+// 方法二
+var find1 = function(name){
+  var index = this.like.indexOf(name);
+  console.log(index,'find1索引');
+}
+// 方法三
+var find2 = function(name,age){
+  console.log('你要找的：'+ name +'和 '+age ,'find2');
+}
+
+// 添加方法
+addMethod(person,'find',find0);
+addMethod(person,'find',find1);
+addMethod(person,'find',find2);
+
+// 调用方法
+person.find();
+person.find("听书");
+person.find("听书",18);
+
+</script>
+</html>

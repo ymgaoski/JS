@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>接口实现</title>
+</head>
+<body>
+ 
+</body>
+
+<script>
+  // 网页输出日志
+  console.slog = console.log;
+  console.log = function(text,...args){
+
+    let others = [];
+    args.forEach(function(item){
+      if (typeof item == 'string'){
+        others.push(`"${item}"`);
+      }else{
+        others.push(item);
+      }
+    })
+    
+    let body = document.getElementsByTagName('body')[0];
+    let node = document.createElement('pre');
+    node.textContent = `${text} ${others.join(" ")}`;
+    body.appendChild(node);
+
+    console.slog(text,...args);
+  }
+</script>
+
+<script>
+
+// 接口实现
+/*
+  3种实现方式
+    1：注释法（通过注释标注有哪些接口，哪些类实现哪些接口，如果不实现也不会报错，靠人人去遵守）
+    2：属性标注法（在实现类中定义一个属性表示实现了哪些接口，再写一个方法去校验这个类有没有实现指定的类，也是检测不了到底有没有实现具体的方法）
+    3：鸭式检查法（真正意义上的模拟接口功能）
+*/
+
+// 鸭式检查法 实现
+
+/***
+ * 用来定义接口的类
+ *  {接口名}  name
+ *  {接口的方法数组}  methods
+ */
+function Interface(name,methods){
+  this.name = name;
+  this.methods = methods;
+}
+// 检测指定类是否实现了指定的接口
+Interface.check = function(obj,interfaces){
+
+  if(arguments.length != 2){
+    throw '参数有误！请传入要检测的对象与需要实现的接口！';
+    return;
+  }
+
+  // 判断接口类型
+  interfaces.forEach(item => {
+    if (item.constructor != Interface.prototype.constructor){
+      throw '不是有效的接口类型对象！';
+    }
+  });
+
+  // 判断是否实现接口方法
+  for (let i=0; i < interfaces.length; i++) {
+    for (const k in interfaces[i].methods) {
+      let key = interfaces[i].methods[k];
+      if (!obj[key] || typeof obj[key] != 'function'){
+        throw `没有实现接口的${key}方法`;
+      }
+    }
+  }
+}
+
+// 定义一个flyInterface接口，有两个方法需要子类实现
+let flyInterface = new Interface('flyInterface',["fly","speedUp"]);
+// sayInterface接口
+let sayInterface = new Interface('sayInterface',["say"]);
+
+
+// 实现类
+function Person(name){
+  this.name = name;
+
+  // 检测是否实现了指定的接口
+  Interface.check(this,[flyInterface,sayInterface]);
+}
+// 实现接口方法
+Person.prototype.fly = function(){
+  console.log(`${this.name} 我会飞~~~`);
+}
+Person.prototype.say = function(){
+  console.log(`${this.name} 我还会说话~~~`);
+}
+Person.prototype.speedUp = function(){
+  console.log(`${this.name} 准备好了没？我要加速了！`);
+}
+
+
+// 使用
+let p1 = new Person('xgao');
+p1.fly();
+p1.say();
+p1.speedUp();
+
+console.log(p1,'p1');
+
+</script>
+</html>

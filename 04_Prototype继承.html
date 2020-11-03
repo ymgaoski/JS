@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>JS继承</title>
+
+  <script>
+    // 寄生式继承
+    function extend(subClass,parentClass){
+
+      // 创建一个空的构造函数
+      function Temp(){}
+      // 将Temp的原型对象指向父类Animal
+      Temp.prototype = parentClass.prototype;
+      // 创建temp实例，用来当子类的原型对象
+      var temp = new Temp();
+      // 修复constructor，因为temp实例默认是没有constructor的，解决类型判断的问题
+      temp.constructor = subClass;
+      // 设置temp实例对象为子类的原型对象
+      subClass.prototype = temp;
+    }
+  </script>
+
+  
+  <script>
+    // 别一种简单继承，引用类型数据也不会共享，也能继承父类的构造函数属性方法和原型对象中的属性方法
+    // 相比上一种功能一样的，更简单，不知道为什么要使用上面这种？暂时不知道这种方式有没有什么问题
+    function extendSmiple(subClass,parentClass){
+      
+      // 另一种简单继承，不使用临时构造函数
+      subClass.prototype = parentClass.prototype;
+      subClass.prototype.constructor = subClass;    
+    }
+  </script>
+
+  <script>
+    
+    // 动物类
+    function Animal(name,age){
+
+      this.name = name;
+      this.age = age;
+      this.colors = ['red','yellow','white']
+      this.run = function(){
+        console.log('【动物】【'+this.name+'】跑起来了！');
+      }
+    }
+    Animal.prototype.eat = function(){
+      console.log('【动物】【'+this.name+'】在吃东西！');
+    }
+
+
+    // 人类
+    function Person(height,name,age){
+      // 将Animal的构造函数中的方法和属性复制到Person中（最好放在第一步处理，防止父类将子类的属性值覆盖）
+      Animal.call(this,name,age);
+
+      this.height = height;
+      this.say = function(){
+        console.log('【人类】我有【'+this.height+'】的身高！');
+      }
+    }
+
+    // 寄生式继承 Person -> Animal
+    // this.extend(Person,Animal);
+
+    // 另一种简单继承，不使用临时构造函数
+    this.extendSmiple(Person,Animal);  
+
+    // 注意：原型对象方法或属性一定要在处理完继承后再定义，不然会无效，因为prototype已经指向到父类了
+    Person.prototype.kill = function(){
+      console.log('【人类】我要kill你！');
+    }
+
+
+    // 学生类
+    function Student(className,height,name,age){
+      // 复制Person的构造函数的方法和属性到Student中
+      Person.call(this,height,name,age);
+
+      this.className = className;
+
+      this.introduction = function(){
+        console.log('【学生】大家好！我是【'+this.name+'】,我的班级【'+className+'】');
+      }
+    }
+
+    // 寄生式继承 Student -> Person
+    // this.extend(Student,Person);
+  
+    // 另一种简单继承，不使用临时构造函数
+    this.extendSmiple(Student,Person); 
+
+  </script>
+
+  <script>
+
+    // 超类
+    var animal = new Animal('animal',88);
+    animal.colors.push('black');
+
+    // 父类
+    var person = new Person(179,'qiang',34);
+
+    // 子类
+    var student = new Student('405班',180,'小高',28);
+    // 调用父类的父类的方法
+    student.run();
+    student.eat();
+    // 调用父类方法
+    student.say();
+    student.kill();
+    // 调用自己的方法
+    student.introduction();
+
+    console.log(animal,'animal');
+    console.log(person,'person');
+    console.log(student,'student');
+  </script>
+</head>
+<body>
+  <h1>JS继承</h1>
+</body>
+</html>

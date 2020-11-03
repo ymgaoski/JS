@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>call与apply</title>
+
+  <script>
+  /*
+    call与apply作用：都是为了改变函数中this的指向
+    区别：
+        功能完全一样，就只是接受参数有点区别 
+        如：
+        var func = function(arg1, arg2) {
+     
+        };
+
+        // call就是普通传参就行
+        func.call(this, arg1, arg2);
+
+        // apply需要包装成数组传进去
+        func.apply(this, [arg1, arg2])
+  */
+      
+    function Person(){
+      this.name = 'xgao';
+    }
+    Person.prototype.say = function(msg){
+      console.log(this,this.name,msg);
+    }
+
+    function test(name,age){
+      console.log(this,'test',name,age);
+    }
+
+    // 创建对象实例
+    var p = new Person();
+
+    // 调用p的test函数并传值
+    test.call(p,'xgao',18);
+    // 两个功能一样，就是传参的方式不一样
+    test.apply(p,['xgao',18]);
+
+    // ----- 常见问题 (面试题)：
+    // 函数进行保存成变量，再调用，this会指向到 window
+    var s = p.say;
+    // Window {postMessage: ƒ, blur: ƒ, focus: ƒ, close: ƒ, parent: Window, …} "" "name"
+    // 就变成了 window.s() 变成了 window调用的s函数，this自然就是指向window的了
+    s();
+
+    // Person {name: "xgao"} "xgao" "hello"
+    p.say('hello');
+
+    // 解决方法
+    // 1、使用call或apply方法解决
+    // Person {name: "xgao"} "xgao" "hello"
+    s.call(p,'hello');
+    s.apply(p,['hello']);
+
+    // 2、使用bind方法解决
+    // Person {name: "xgao"} "xgao" "hello"
+    s.bind(p)('hello');
+
+    // bind功能：和call、apply 一样，都是修改对象的this指向
+    /**
+     * bind()方法会创建一个新函数，称为绑定函数，当调用这个绑定函数时，
+     * 绑定函数会以创建它时传入 bind()方法的第一个参数作为 this，
+     * 传入 bind() 方法的第二个以及以后的参数加上绑定函数运行时本身的参数按照顺序作为原函数的参数来调用原函数。
+     */
+     
+    /**
+    // bind()实例
+    // 以前在事件回调里面使用this的话，需要在外面临时保存
+    var _this = this;
+    $('.someClass').on('click',function(event) {
+        console.log(_this.name); 
+    });
+
+    // 优雅使用bind()解决
+    $('.someClass').on('click',function(event) {
+        console.log(this.name); 
+    }.bind(this));
+
+    */
+
+    // apply、call、bind 区别
+    // bind 是返回对应函数，便于稍后调用；apply 、call 则是立即调用 。
+
+  </script>
+  
+</head>
+<body>
+  <h1>call与apply</h1>
+</body>
+</html>

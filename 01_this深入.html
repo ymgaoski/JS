@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>this深入</title>
+
+  <script>
+  /*
+    this在4种情况下的作用：
+
+    1、在对象的方法中 --->> 当前对象
+    2、在函数方法中 --->> window
+    3、作为构造函数和 new 使用时 --->> 构造函数创建的对象
+    4、在call事apply方法中 --->> 第一个参数
+    5、在ES6箭头函数中 -->> 里面的this将会指向 最外层调用的对象
+
+    this是谁调用就指向谁
+  */
+
+    function Person(){
+      this.name = 'xgao';
+      // 3、作为构造函数和 new 使用时 --->> 构造函数创建的对象
+      // Person {name: "xgao"} "person"
+      console.log(this,'person');
+
+      this.say = function(){
+        // 1、在对象的方法中 --->> 当前对象
+        // Person {name: "xgao"} "say"
+        console.log(this,'say');
+      }
+    }
+
+    // 普通函数
+    function test(){
+      // 2、在函数方法中 --->> window
+      // Window {postMessage: ƒ, blur: ƒ, focus: ƒ, close: ƒ, parent: Window, …} "Test"
+      console.log(this,'Test');
+    }
+    
+    // call的使用
+    function kill(name){
+      // Person {name: "xgao", say: ƒ} "kill" "person"
+      console.log(this,'kill',name);
+    }
+
+    // apply的使用
+    function song(arg1,arg2){
+      // Person {name: "xgao", say: ƒ} "apply" "song1" "song2"
+      console.log(this,'apply',arg1,arg2);
+    }
+
+    var p = new Person();
+    p.say();
+
+    test();
+
+    kill.call(p,'person');
+
+    song.apply(p,['song1','song2']);
+  </script>
+
+  <!-- this指向的深入 -->
+  <script>
+    console.log('------- this指向的深入 --------');
+
+    this.a = 20;
+    var test = {
+      a: 40,
+      init:function(){
+        console.log(this,this.a);
+
+        function go(){
+          this.a = 60;
+          console.log(this,this.a);
+        }
+        go.prototype.a = 50;
+        return go;
+      }
+    }
+
+    // 结束：40，20，60，60，60
+
+    // test.init　其实就是 test.init() 所以，这个时候init里面的this是指向 test对象的，因为是test对象调用它，所以会打印 40
+    var p = test.init();
+
+    // s = window.s
+    var s = test.init;
+    // window.s() 所以init里面的this是指定window的，所以打印 20
+    s();
+
+    // 因为在go方法里面对a重新设置了 a 的值，属于对象属性，优先级要大于 原型对象中的属性，所以会打印 60，另外此时调用 p() 里面的this指向的还是 window ,里面把this.a = 60，就是修改了全局的a的值
+    p();
+
+    /* 
+      分为2步：
+        第一步 new(test.init()) 同上，init里面的this也是指定test,所以这里打印出来的就是 40
+        第二步 new ()() 最后执行的时候是是调用返回的 go 对象函数，里面的this指向的是 go ，而不是window，但是原型对象属性没有对象原有属性优先级高，所以打印还是 60
+    */
+    new(test.init())();
+  </script>
+
+
+
+  <!-- this指向的深入 - 箭头函数的指向 -->
+  <script>
+    // 箭头函数的特性，使用箭头函数后，里面的this将会指向 最外层调用的对象
+    console.log('------- this指向的深入 箭头函数的指向  --------');
+  
+    this.a = 20;
+    var test = {
+      a: 40,
+      init:() => {
+        console.log(this,this.a);
+  
+        function go(){
+          this.a = 60;
+          console.log(this,this.a);
+        }
+        go.prototype.a = 50;
+        return go;
+      }
+    }
+  
+    // 结束：20，20，60，60，60
+  
+    // 因为箭头函数的特性， test.init　其实就是 window.test.init() 所以，这个时候init里面的this是指向 window对象的，所以会打印 20
+    var p = test.init();
+  
+    // s = window.s
+    var s = test.init;
+    // window.s() 所以init里面的this是指定window的，所以打印 20
+    s();
+
+    // 因为在go方法里面对a重新设置了 a 的值，属于对象属性，优先级要大于 原型对象中的属性，所以会打印 60，另外此时调用 p() 里面的this指向的还是 window ,里面把this.a = 60，就是修改了全局的a的值
+    p();
+  
+    /* 
+      分为2步：
+        第一步 new(test.init()) 同上，init里面的this也是指定window,因为上一步的调用导致全局 a 被修改成 60，所以这里打印出来的就是 60
+        第二步 new ()() 最后执行的时候是是调用返回的 go 对象函数，里面的this指向的是 go ，而不是window，但是原型对象属性没有对象原有属性优先级高，所以打印还是 60
+    */
+    new(test.init())();
+  
+  </script>
+
+</head>
+<body>
+  <h1>this深入</h1>
+</body>
+</html>
