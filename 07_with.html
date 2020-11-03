@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+</body>
+</html>
+
+<!-- 
+  作用： 用于简化对象操作
+-->
+
+<script>
+  var foo = 1;
+  var bar = {
+      foo : 2,
+      say(){
+        console.log('hello');
+      }
+  };
+
+  // with 语句里面不需要再使用 bar. 语句，可直接使用该语句的方法或属性
+  with(bar){
+    console.log(foo); // 2
+
+    foo = 3;
+    console.log(foo); // 3
+
+    // 一样会覆盖 bar 的 foo属性
+    var foo = 4;
+    console.log(foo); // 4
+
+    // 当设置不存bar中的属性，会设置到全局变量中，不会设置给 bar（变量污染）
+    test = 10;
+
+    say();  // hello
+  }
+
+  console.log(bar.foo); // 4
+
+  console.log(foo); // 1
+
+  foo = 5;
+  console.log(foo); // 5
+
+  console.log(foo.test);  // undefined
+
+  console.log(test);  // 10
+</script>

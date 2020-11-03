@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>不使用parseInt 字符串转数值</title>
+
+  <script>
+
+    /**
+     * 字符串转数值
+     * @param str  要转换的字符串
+     * @param hex  数据源的进度，10，16，2
+     * */
+    function stringConverNumber(str, hex){
+
+      let chars = str.toUpperCase().split('');
+      let number = 0;
+      for(let i = 0; i<chars.length;i++){
+        // 精髓之处
+        number = number * hex;
+        // codePintAt 将字符转换成 对应的码点code
+        number += chars[i].codePointAt(0) - '0'.codePointAt(0);
+        // 16进制处理，9编码是57，A编码是65，中间有些特殊符号占了7位（:;<=>?@）
+        if (hex == 16 && number > 9){
+          number -= 7;
+        }
+        
+        // console.log(chars[i],number,number * 10);
+      }
+      return number;
+    }
+
+    let num  = stringConverNumber('1e',16);
+    console.log(num,'1e 十六进制');
+
+    num  = stringConverNumber('1024',10);
+    console.log(num,'1024 十进制');
+
+    num  = stringConverNumber('110',2);
+    console.log(num,'110 二进制');
+
+  </script>
+</head>
+<body>
+  
+</body>
+</html>

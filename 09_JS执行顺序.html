@@ -1,0 +1,63 @@
+<!-- 
+
+  宏任务 包含1个或多个 微任务
+  宏任务有优先级，微任务没有，它只能按顺序调用
+  
+  JS执行逻辑：
+    一个宏任务中的微观任务全部执行完毕后再才执行下一个宏任务
+
+  setTimeout 会生成新的宏任务
+  Promise 会生成微任务
+ -->
+
+<script>
+
+console.log(1);
+
+async function test(){
+  console.log(2);
+
+  await new Promise((resolve) => {
+    console.log(3);
+    resolve();
+  }).then(() => {
+    console.log(4);
+  })
+  console.log(4.1);
+}
+
+setTimeout(() => {
+  console.log(5);
+  
+  new Promise((resolve) => {
+    console.log(5.1);
+    resolve();
+  }).then(() => {
+    console.log(5.2);
+  })
+  console.log(5.3);
+}, 0);
+
+new Promise((resolve) => {
+  console.log(6);
+  resolve();
+}).then(()=>{
+  console.log(7);
+});
+
+console.log(8);
+test();
+
+// --- 宏任务1
+// 1,6,8,2 同步代码
+
+// 3  微任务
+// 7  微任务
+// 4，4.1  微任务
+
+// --- 宏任务2
+// 5,5.1,5.3  同步代码
+
+// 5.2  微任务
+
+</script>
