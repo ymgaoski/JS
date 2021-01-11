@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>闭包</title>
+</head>
+<body>
+ 
+</body>
+
+<script>
+  // 网页输出日志
+  console.slog = console.log;
+  console.log = function(text,...args){
+
+    let others = [];
+    args.forEach(function(item){
+      if (typeof item == 'string'){
+        others.push(`"${item}"`);
+      }else{
+        others.push(item);
+      }
+    })
+    
+    let body = document.getElementsByTagName('body')[0];
+    let node = document.createElement('pre');
+    node.textContent = `${text} ${others.join(" ")}`;
+    body.appendChild(node);
+
+    console.slog(text,...args);
+  }
+</script>
+
+<script>
+/*
+  闭包
+    就是在函数A里面返回一个匿名函数，并且匿名函数里面会引用到函数A里面的变量，
+    当外部调用函数A后，会形成引用匿名函数，垃圾回收将不会对该引用进行清理，
+    从页使得函数A中的变量也不会被清理，当再去执行匿名函数的时候还是能继续访问函数A中的变量
+
+    特点：
+      实现变量私有话，延长代码生命周期
+    缺点：
+      使用不当，容易造成内存泄露（使用完后，将闭包函数置null可解决）
+**/
+
+// 使用闭包实现全局唯一自增长函数
+function addFn(){
+  let count = 0;
+  return function(){
+    return count++;
+  }
+}
+
+const add = addFn();
+
+// -> 0
+console.log(add());
+// -> 1
+console.log(add());
+// -> 2
+console.log(add());
+// -> 3
+console.log(add());
+// -> 4
+console.log(add());
+
+</script>
+</html>
