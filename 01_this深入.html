@@ -8,12 +8,12 @@
 
   <script>
   /*
-    this在4种情况下的作用：
+    this在5种情况下的作用：
 
     1、在对象的方法中 --->> 当前对象(执行时)
     2、在函数方法中 --->> window (在严格模式下是 undefined)
     3、作为构造函数和 new 使用时 --->> 构造函数创建的对象(执行时)
-    4、在call事apply方法中 --->> 第一个参数
+    4、在call、apply、bind方法中 --->> 第一个参数
     5、在ES6箭头函数中 -->> 里面的this将会指向 定义时离它最近的非箭头函数的上下文对象,（注意是定义时，不是执行时）
 
     this是谁调用就指向谁
@@ -89,13 +89,14 @@
     // test.init　其实就是 test.init() 所以，这个时候init里面的this是指向 test对象的，因为是test对象调用它，所以会打印 40
     var p = test.init();
 
-    // s = window.s
+    // s() = window.s()
     var s = test.init;
     // window.s() 所以init里面的this是指定window的，所以打印 20
     s();
 
+    // p() = window.p()
     // 因为在go方法里面对a重新设置了 a 的值，属于对象属性，优先级要大于 原型对象中的属性，所以会打印 60，另外此时调用 p() 里面的this指向的还是 window ,里面把this.a = 60，就是修改了全局的a的值
-    p();
+    p(); 
 
     /* 
       分为2步：

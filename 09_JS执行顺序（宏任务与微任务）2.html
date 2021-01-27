@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      new Promise((resolve, reject) => {
+        // 在Promise参数函数中的是同步代码, 先打印1
+        console.log(1)
+        setTimeout(function () {
+          // 这里产生了一个宏任务, 同步代码执行完了,
+          // 在异步队列里只有一个宏任务, 先执行, 第3次打印2
+          console.log(2)
+          // 调用resolve产生一个微任务
+          resolve('成功')
+        }, 0)
+      })
+        .then(value => {
+          // 只有当Promise的状态改变时执行, 第4次打印3
+          console.log(3)
+          setTimeout(function () {
+            // 这里产生宏任务, 先排队, 跟时间没有关系!!!!
+            // 即使这里写0, 5依然最后执行
+            console.log(5)
+          }, 0)
+          // 第5次打印6
+          console.log(6)
+          // 这里返回undefined, 产生一个微任务
+        })
+        .then(() => {
+          // 第6次打印7
+          console.log(7)
+        })
+
+      // 这里是同步代码, 第二次打印4
+      console.log(4)
+    </script>
+  </body>
+</html>
